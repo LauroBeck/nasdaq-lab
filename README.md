@@ -1,38 +1,44 @@
-# 🏛️ IBM & Nasdaq Strategic Inflection Monitor (2026)
+# 🏛️ Financial Intelligence Suite 2026
+**Quant-focused Monitoring & Institutional Alpha Tracking**
 
 [![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Maintainer: LauroBeck](https://img.shields.io/badge/Maintainer-LauroBeck-cyan)](https://github.com/LauroBeck)
 
-This engine utilizes **second-derivative acceleration analysis** to identify mathematical inflection points in equity trends. It specifically monitors the decoupling of **IBM (NYSE: IBM)** from the **Nasdaq Composite (^IXIC)** to detect "Value vs. Growth" rotations.
+This engine utilizes **second-derivative acceleration analysis** to identify mathematical inflection points in equity trends. It specifically monitors the decoupling of **IBM (NYSE: IBM)** and **JPMorgan (NYSE: JPM)** from the **Nasdaq Composite (^IXIC)** to detect "Value vs. Growth" rotations in the 2026 high-rate environment.
 
-## 📊 Live Market Context (March 5, 2026)
-As of today's market session, the system is tracking a critical **Tech-to-Value rotation** driven by global macro-pressure:
+## 📈 Market State (March 5, 2026)
+| Metric | Value | Status | Catalyst |
+| :--- | :--- | :--- | :--- |
+| **IBM Price** | **$259.16** | 🟢 +3.64% | Nighthawk 120-qubit benchmarking |
+| **JPM Price** | **$293.43** | 🟡 2.04% Yield | $104.5B Net Interest Income Target |
+| **Nasdaq Index** | **22,676.56** | 🔴 0.57% Decline | Tech-heavy consolidation |
+| **US 10-Yr Yield** | **4.12%** | ⚠️ Pressure | Rising Bond Yields |
 
-| Metric | Value | Status |
-| :--- | :--- | :--- |
-| **IBM Price** | **$259.16** | 🟢 Strong Recovery Signal |
-| **Nasdaq Index** | **22,676.56** | 🔴 0.57% Intraday Decline |
-| **S&P 500** | **6,803.19** | 🔴 0.98% Intraday Decline |
-| **US 10-Yr Yield** | **4.12%** | ⚠️ Rising Bond Pressure |
-| **Brent Crude** | **$83.00+** | ⚠️ Energy Supply Risk |
+---
 
-## 🛠️ Technology Stack
-* **[yfinance](https://github.com/ranaroussi/yfinance)** - Real-time market data retrieval.
-* **[SciPy](https://scipy.org/)** - Gaussian signal smoothing for noise reduction.
-* **[Matplotlib](https://matplotlib.org/)** - Professional Bloomberg-style dark mode visualization.
-* **[NumPy](https://numpy.org/)** - High-performance gradient calculations for inflection detection.
+## 🛠️ Repository Logic
+
+### 🧪 Growth Cluster: IBM Quantum
+- **`ibm_pro5.py`**: Monitors Nighthawk processor scaling and Qiskit gate fidelity.
+- **Yield Alpha**: **$1.68** quarterly dividend payable on **March 10, 2026**.
+
+### 🏦 Value Cluster: JPM Fortress
+- **`jpm_fortress.py`**: Tracks Tier 1 Capital (CET1) and liquidity buffers.
+- **Yield Alpha**: Trailing 12-month dividend payout of **$6.00**.
+
+### 📉 Risk Cluster: Index Actuals
+- **`nasdaq_actual1.py`**: High-precision index tracking and support-level alerts.
+- **`nasdaq_alerts1.log`**: Automation log for intraday volatility > 0.50%.
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-Ensure your environment is running Python 3.10 or higher.
 ```bash
 pip install yfinance scipy matplotlib numpy
 ```
 
 ### Execution
-Run the core monitor to generate the latest inflection map:
 ```bash
 python3 scripts/core/ibm_monitor.py
 ```
