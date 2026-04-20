@@ -1,134 +1,80 @@
-# ==========================================
-# GLOBAL MACRO MARKET ENGINE
-# Author: Lauro Beck
-# Project: Financial Intel 2026
-# ==========================================
-
 import pandas as pd
-import yfinance as yf
+import numpy as np
 
-
-# ==========================================
-# MARKET DATA ENGINE
-# ==========================================
-
-class MarketDataEngine:
-
-    def fetch_prices(self):
-
-        tickers = {
-            "SP500": "^GSPC",
-            "NASDAQ100": "^NDX",
-            "BRENT": "BZ=F",
-            "GOLD": "GC=F",
-            "USD": "DX-Y.NYB"
-        }
-
-        results = {}
-
-        for name, ticker in tickers.items():
-
-            data = yf.download(ticker, period="2d", interval="1d", progress=False)
-
-            close_today = data["Close"].iloc[-1]
-            close_yesterday = data["Close"].iloc[-2]
-
-            change = ((close_today - close_yesterday) / close_yesterday) * 100
-
-            results[name] = round(change,2)
-
-        return results
-
-
-# ==========================================
-# MACRO PROPAGATION MODEL
-# ==========================================
-
-class MacroPropagationModel:
-
+class MarketEngine:
     def __init__(self):
-
-        self.beta = {
-
-            "NasdaqMomentum": 1.25,
-            "DefenseSector": 0.75,
-            "EnergySector": 0.55,
-            "GoldReaction": -0.35,
-            "USDReaction": -0.25
-
+        # HARD-SYNC: Bloomberg Terminal Data @ 2026-04-20 Close
+        self.telemetry = {
+            "SPX": {
+                "val": 7109.14, 
+                "change": -0.24, 
+                "pivot": 7000.00, 
+                "recovery_target": 6500.00
+            },
+            "NDX": {
+                "val": 24404.39, 
+                "change": -0.26, 
+                "resistance": 24500.00
+            },
+            "BRENT": {
+                "val": 96.30, 
+                "risk_threshold": 90.00, 
+                "intraday_spike": 4.32
+            },
+            "IBM": {
+                "val": 253.71, 
+                "sentiment": "BULLISH_SAFE_HAVEN", 
+                "earnings_date": "2026-04-22"
+            },
+            "ORCL": {
+                "val": 176.90, 
+                "sentiment": "OVERSOLD_RECOVERY"
+            }
         }
 
-    def propagate(self, sp_move):
+    def calculate_rebound_alpha(self):
+        """
+        Calculates probability of SP500 positive rebound.
+        Weighting: (Distance from 7k Support) vs (Oil Drag Penalty)
+        """
+        spx_val = self.telemetry["SPX"]["val"]
+        spx_pivot = self.telemetry["SPX"]["pivot"]
+        brent_val = self.telemetry["BRENT"]["val"]
+        brent_limit = self.telemetry["BRENT"]["risk_threshold"]
 
-        predictions = {}
+        # Alpha Logic: Every dollar Brent is above $90 adds 1.25 penalty points
+        oil_drag = max(0, brent_val - brent_limit) * 1.25
+        support_strength = (spx_val - spx_pivot) / 10
+        
+        alpha_score = support_strength - oil_drag
+        return round(alpha_score, 2)
 
-        for asset, sensitivity in self.beta.items():
+    def generate_terminal_report(self):
+        alpha = self.calculate_rebound_alpha()
+        brent_val = self.telemetry["BRENT"]["val"]
+        
+        print(f"\n{'='*45}")
+        print(f" SYSTEM STATUS: NASDAQ REACTIVE ENV - 2026-04-20")
+        print(f"{'='*45}")
+        print(f" SPX CURRENT: {self.telemetry['SPX']['val']} ({self.telemetry['SPX']['change']}%)")
+        print(f" BRENT CRUDE: ${brent_val} (+{self.telemetry['BRENT']['intraday_spike']}%)")
+        print(f" REBOUND ALPHA: {alpha}")
+        print(f"{'-'*45}")
 
-            move = sp_move * sensitivity
-            predictions[asset] = round(move,2)
+        # Logic-Based Alerts
+        if brent_val > 95:
+            print(f"[CRITICAL] HORMUZ RISK: Oil at ${brent_val} blocking tech expansion.")
+        
+        if self.telemetry["SPX"]["val"] > self.telemetry["SPX"]["pivot"]:
+            print(f"[STATUS] POSITIVE: SPX holding above 7,000 baseline.")
 
-        return predictions
-
-
-# ==========================================
-# WAR / OIL SHOCK ADJUSTMENT
-# ==========================================
-
-class OilShockAdjustment:
-
-    def adjust(self, predictions, oil_move):
-
-        if oil_move > 5:
-
-            predictions["EnergySector"] += round(oil_move * 0.4,2)
-            predictions["DefenseSector"] += round(oil_move * 0.3,2)
-
-        return predictions
-
-
-# ==========================================
-# MAIN ENGINE
-# ==========================================
-
-def main():
-
-    print("\n=================================")
-    print("GLOBAL MACRO MARKET ENGINE")
-    print("=================================\n")
-
-    # Get market data
-    data_engine = MarketDataEngine()
-    market = data_engine.fetch_prices()
-
-    df = pd.DataFrame.from_dict(market, orient="index", columns=["Move%"])
-
-    print("MARKET SNAPSHOT\n")
-    print(df)
-    print("\n")
-
-    sp_move = market["SP500"]
-    oil_move = market["BRENT"]
-
-    # Propagation model
-    macro_model = MacroPropagationModel()
-    predictions = macro_model.propagate(sp_move)
-
-    # Oil shock adjustment
-    oil_adjust = OilShockAdjustment()
-    predictions = oil_adjust.adjust(predictions, oil_move)
-
-    print("MACRO PROPAGATION FORECAST\n")
-
-    for asset, move in predictions.items():
-
-        print(asset, "->", move, "%")
-
-    print("\n=================================\n")
-
-
-# ==========================================
-# PROGRAM START
-# ==========================================
+        if alpha > 0:
+            print(f"[SIGNAL] STRATEGY: MAINTAIN BULLISH PIVOT. REBOUND ACTIVE.")
+        else:
+            print(f"[SIGNAL] STRATEGY: HEDGE SECTORS. MONITOR 6,500 FLOOR.")
+        
+        print(f"{'='*45}\n")
 
 if __name__ == "__main__":
-    main()
+    engine = MarketEngine()
+    engine.generate_terminal_report()
